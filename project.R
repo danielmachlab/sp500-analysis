@@ -6,4 +6,3 @@ head(SPX)
 
 # calculate daily log returns of the adjusted closing prices
 
-#hello this is a example push from Rizwan
