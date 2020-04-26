@@ -5,3 +5,5 @@ SPX <- getSymbols("^GSPC", auto.assign = FALSE, from = "1980-01-01")
 head(SPX)
 
 # calculate daily log returns of the adjusted closing prices
+
+#hello this is a example push from Rizwan
