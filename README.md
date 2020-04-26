@@ -3,8 +3,11 @@ Implement various single-regime and two-state Markov-Switching GARCH models to a
 
 # Project Plan
 Due date: May 11th
+
 **Milestones**
+
 Code done: May 4th
+
 Analysis and Report done: May 11th
 
 ### Model fitting
