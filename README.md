@@ -4,22 +4,18 @@ Implement various single-regime and two-state Markov-Switching GARCH models to a
 # Project Plan
 Due date: May 11th
 
-**Milestones**
-
 Code done: May 4th
 
 Analysis and Report done: May 11th
 
-### Model fitting
-Fit 12 models
+# Breakdown
 
-### In-sample comparisons
-Rank 12 models using BIC
+**Model fitting**: Fit 12 models
 
-### Model interpretation
-Show volatility model structure for best model
+**In-sample comparisons**: Rank 12 models using BIC
 
-### Out-of-sample comparison
-Backtest 12 models
+**Model interpretation**:Show volatility model structure for best model
 
-### Analysis & Report writing
+**Out-of-sample comparison**:Backtest 12 models
+
+**Analysis & Report writing**
