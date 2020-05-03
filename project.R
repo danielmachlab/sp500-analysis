@@ -75,8 +75,6 @@ summary(fit.ms2.garch.student_t)
 
 
 ############### Rizwan's Models
-
-
 #1-state GARCH skewstd dist model
 ms1.garch.sstd <- CreateSpec(variance.spec = list(model = "tGARCH"),
                              distribution.spec = list(distribution = "sstd"))
