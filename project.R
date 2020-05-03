@@ -73,3 +73,38 @@ ms2.garch.student_t <- CreateSpec(variance.spec = list(model = c("tGARCH", "tGAR
 fit.ms2.garch.student_t <- FitML(spec = ms2.garch.student_t, data = sp500.lrtn)
 summary(fit.ms2.garch.student_t)
 
+
+############### Rizwan's Models
+
+
+#1-state GARCH skewstd dist model
+ms1.garch.sstd <- CreateSpec(variance.spec = list(model = "tGARCH"),
+                             distribution.spec = list(distribution = "sstd"))
+
+
+fit.ms1.garch.sstd <- FitML(spec = ms1.garch.sstd, data = sp500.lrtn)
+summary(fit.ms1.garch.sstd)
+
+#1-state GJR skewstd dist model
+ms1.gjr.sstd <- CreateSpec(variance.spec = list(model = "gjrGARCH"),
+                           distribution.spec = list(distribution = "sstd"))
+
+
+fit.ms1.gjr.sstd <- FitML(spec = ms1.garch.sstd, data = sp500.lrtn)
+summary(fit.ms1.garch.sstd)
+
+#2-state GARCH skewstd dist model
+ms2.garch.sstd <- CreateSpec(variance.spec = list(model = "tGARCH"),
+                             distribution.spec = list(distribution = "sstd"),
+                             switch.spec = list(K = 2))
+
+fit.ms2.garch.sstd <- FitML(spec = ms2.garch.sstd, data = sp500.lrtn)
+summary(fit.ms2.garch.sstd)
+
+#2-state GJR skewstd dist model
+ms2.gjr.sstd <- CreateSpec(variance.spec = list(model = "gjrGARCH"),
+                           distribution.spec = list(distribution = "sstd"),
+                           switch.spec = list(K = 2))
+
+fit.ms2.gjr.sstd <- FitML(spec = ms2.gjr.sstd, data = sp500.lrtn)
+summary(fit.ms2.gjr.sstd)
