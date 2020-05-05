@@ -55,6 +55,12 @@ ms1.garch.student_t <- CreateSpec(variance.spec = list(model = "sGARCH"),
 fit.ms1.garch.student_t <- FitML(spec = ms1.garch.student_t, data = data)
 summary(fit.ms1.garch.student_t)
 
+# 1 state - GJR - student t
+ms1.garch.student_t <- CreateSpec(variance.spec = list(model = "sGARCH"),
+                               distribution.spec = list(distribution = "std"))
+fit.ms1.garch.student_t <- FitML(spec = ms1.garch.student_t, data =data)
+summary(fit.ms1.garch.student_t)
+
 # 2 state - GARCH - student t
 ms2.garch.student_t <- CreateSpec(variance.spec = list(model = c("sGARCH", "sGARCH")),
                                distribution.spec = list(distribution = c("std", "std")),
@@ -62,11 +68,6 @@ ms2.garch.student_t <- CreateSpec(variance.spec = list(model = c("sGARCH", "sGAR
 fit.ms2.garch.student_t <- FitML(spec = ms2.garch.student_t, data = data)
 summary(fit.ms2.garch.student_t)
 
-# 1 state - GJR - student t
-ms1.garch.student_t <- CreateSpec(variance.spec = list(model = "sGARCH"),
-                               distribution.spec = list(distribution = "std"))
-fit.ms1.garch.student_t <- FitML(spec = ms1.garch.student_t, data =data)
-summary(fit.ms1.garch.student_t)
 
 # 2 state - GJR - student t
 ms2.garch.student_t <- CreateSpec(variance.spec = list(model = c("sGARCH", "sGARCH")),
@@ -108,3 +109,6 @@ ms2.gjr.sstd <- CreateSpec(variance.spec = list(model = "gjrGARCH"),
 
 fit.ms2.gjr.sstd <- FitML(spec = ms2.gjr.sstd, data = data)
 summary(fit.ms2.gjr.sstd)
+
+### PART 4
+backtest(arma, data, 2000, 1)
