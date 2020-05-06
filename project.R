@@ -16,6 +16,8 @@ arma
 
 data = arma$residuals
 
+length(data)
+
 ############### Harsh's Models
 # 1-state GARCH normal dist model
 ms1.grach.norm <- CreateSpec(variance.spec = list(model = "sGARCH"), 
@@ -56,25 +58,25 @@ fit.ms1.garch.student_t <- FitML(spec = ms1.garch.student_t, data = data)
 summary(fit.ms1.garch.student_t)
 
 # 1 state - GJR - student t
-ms1.garch.student_t <- CreateSpec(variance.spec = list(model = "sGARCH"),
+ms1.gjr.student_t <- CreateSpec(variance.spec = list(model = "sGARCH"),
                                distribution.spec = list(distribution = "std"))
-fit.ms1.garch.student_t <- FitML(spec = ms1.garch.student_t, data =data)
-summary(fit.ms1.garch.student_t)
+fit.ms1.gjr.student_t <- FitML(spec = ms1.gjr.student_t, data =data)
+summary(fit.ms1.gjr.student_t)
 
 # 2 state - GARCH - student t
-ms2.garch.student_t <- CreateSpec(variance.spec = list(model = c("sGARCH", "sGARCH")),
-                               distribution.spec = list(distribution = c("std", "std")),
+ms2.garch.student_t <- CreateSpec(variance.spec = list(model = "sGARCH"),
+                               distribution.spec = list(distribution = "std"),
                                switch.spec = list(k=2))
 fit.ms2.garch.student_t <- FitML(spec = ms2.garch.student_t, data = data)
 summary(fit.ms2.garch.student_t)
 
 
 # 2 state - GJR - student t
-ms2.garch.student_t <- CreateSpec(variance.spec = list(model = c("sGARCH", "sGARCH")),
-                               distribution.spec = list(distribution = c("std", "std")),
+ms2.gjr.student_t <- CreateSpec(variance.spec = list(model = "sGARCH"),
+                               distribution.spec = list(distribution = "std"),
                                switch.spec = list(k=2))
-fit.ms2.garch.student_t <- FitML(spec = ms2.garch.student_t, data = data)
-summary(fit.ms2.garch.student_t)
+fit.ms2.gjr.student_t <- FitML(spec = ms2.gjr.student_t, data = data)
+summary(fit.ms2.gjr.student_t)
 
 
 ############### Rizwan's Models
@@ -111,4 +113,46 @@ fit.ms2.gjr.sstd <- FitML(spec = ms2.gjr.sstd, data = data)
 summary(fit.ms2.gjr.sstd)
 
 ### PART 4
-backtest(arma, data, 2000, 1)
+models = list(ms1.grach.norm, ms1.gjr.norm, ms2.grach.norm, ms2.gjr.norm,
+              ms1.garch.student_t, ms1.gjr.student_t, ms2.garch.student_t, ms2.gjr.student_t,
+              ms1.garch.sstd, ms1.gjr.sstd, ms2.garch.sstd, ms2.gjr.sstd)
+
+# sample size for out-of sample testing 
+n.ots <- 2000
+# in sample window size is first xxxx data. (# data) 7644 - 2000 = 5644
+n.its <- length(data) - n.ots
+k.update <- 100
+
+## Create forcast function
+forcast <- function(alpha) {  
+  VaR <- matrix(NA, nrow = n.ots, ncol = length(models))
+  y.ots <- matrix(NA, nrow = n.ots, ncol = 1)
+  model.fit <- vector(mode = "list", length = length(models))
+  for (i in 1:n.ots) {
+    cat("Backtest - Iteration: ", i, "\n")
+    y.its <- SMI[i:(n.its + i - 1)]
+    y.ots[i] <- SMI[n.its + i]
+    for (j in 1:length(models)) {
+      if (k.update == 1 || i %% k.update == 1) {
+        cat("Model", j, "is reestimated\n")
+        model.fit[[j]] <- FitML(spec = models[[j]], data = y.its,
+                                ctr = list(do.se = FALSE))
+      }
+      VaR[i, j] <- Risk(model.fit[[j]]$spec, par = model.fit[[j]]$par,
+                        data = y.its, n.ahead = 1, alpha = alpha, do.es = FALSE,
+                        do.its = FALSE)$VaR
+      }
+    }
+}
+
+## Forcast at 5%
+forcast(0.05)
+
+## Forcast at 1%
+forcast(0.01)
+
+
+
+
+
+
