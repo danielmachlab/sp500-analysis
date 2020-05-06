@@ -66,7 +66,7 @@ summary(fit.ms1.gjr.student_t)
 # 2 state - GARCH - student t
 ms2.garch.student_t <- CreateSpec(variance.spec = list(model = "sGARCH"),
                                distribution.spec = list(distribution = "std"),
-                               switch.spec = list(k=2))
+                               switch.spec = list(K=2))
 fit.ms2.garch.student_t <- FitML(spec = ms2.garch.student_t, data = data)
 summary(fit.ms2.garch.student_t)
 
@@ -74,7 +74,7 @@ summary(fit.ms2.garch.student_t)
 # 2 state - GJR - student t
 ms2.gjr.student_t <- CreateSpec(variance.spec = list(model = "sGARCH"),
                                distribution.spec = list(distribution = "std"),
-                               switch.spec = list(k=2))
+                               switch.spec = list(K=2))
 fit.ms2.gjr.student_t <- FitML(spec = ms2.gjr.student_t, data = data)
 summary(fit.ms2.gjr.student_t)
 
@@ -124,7 +124,6 @@ n.its <- length(data) - n.ots
 k.update <- 100
 
 ## Create forcast function
-library("GAS")
 forcast <- function(alpha) { 
   cat("Forcasting... Alpha = ", alpha, "\n")
   VaR <- matrix(NA, nrow = n.ots, ncol = length(models))
@@ -145,29 +144,35 @@ forcast <- function(alpha) {
                         do.its = FALSE)$VaR
       }
   }
-  
-  CC.pval <- DQ.pval <- vector("double", length(models))
-  for (j in 1:length(models)) {
-    test <- GAS::BacktestVaR(data = y.ots, VaR = VaR[, j],
-                                alpha = alpha)
-    CC.pval[j] <- test$LRcc[2]
-    DQ.pval[j] <- test$DQ$pvalue
-    }
-  names(CC.pval) <- names(DQ.pval) <- models
-  print(CC.pval)
-  print(DQ.pval)
   return(VaR)
 }
 
-## Forcast at 5%
-VaR5 = forcast(0.05)
 
+calcPercentUnder = function(VaR, recent2kdata){
+  percentUnder = list()
+  for(j in 1:ncol(VaR)){
+    counter = 0
+    v = VaR[,j]
+    for (i in 1:length(v)){
+      if(recent2kdata[i] < v[i]){
+        counter=counter+1
+      }
+    }
+    percentUnder[[j]] <- counter/length(recent2kdata)  
+  }
+  return(percentUnder)
+}
+## Forcast at 5%
+# VaR5 = forcast(0.05)
+recent2kdata = data[(n.its+1):length(data)]
+pU5 = calcPercentUnder(VaR5, recent2kdata)
+print(pU5)
 
 
 ## Forcast at 1%
 VaR1 = forcast(0.01)
-
-VaR
+pU1 = calcPercentUnder(VaR1, recent2kdata)
+print(pU1)
 
 
 
