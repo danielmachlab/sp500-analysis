@@ -124,14 +124,16 @@ n.its <- length(data) - n.ots
 k.update <- 100
 
 ## Create forcast function
-forcast <- function(alpha) {  
+library("GAS")
+forcast <- function(alpha) { 
+  cat("Forcasting... Alpha = ", alpha, "\n")
   VaR <- matrix(NA, nrow = n.ots, ncol = length(models))
   y.ots <- matrix(NA, nrow = n.ots, ncol = 1)
   model.fit <- vector(mode = "list", length = length(models))
   for (i in 1:n.ots) {
     cat("Backtest - Iteration: ", i, "\n")
-    y.its <- SMI[i:(n.its + i - 1)]
-    y.ots[i] <- SMI[n.its + i]
+    y.its <- data[i:(n.its + i - 1)]
+    y.ots[i] <- data[n.its + i]
     for (j in 1:length(models)) {
       if (k.update == 1 || i %% k.update == 1) {
         cat("Model", j, "is reestimated\n")
@@ -142,14 +144,31 @@ forcast <- function(alpha) {
                         data = y.its, n.ahead = 1, alpha = alpha, do.es = FALSE,
                         do.its = FALSE)$VaR
       }
+  }
+  
+  CC.pval <- DQ.pval <- vector("double", length(models))
+  for (j in 1:length(models)) {
+    test <- GAS::BacktestVaR(data = y.ots, VaR = VaR[, j],
+                                alpha = alpha)
+    CC.pval[j] <- test$LRcc[2]
+    DQ.pval[j] <- test$DQ$pvalue
     }
+  names(CC.pval) <- names(DQ.pval) <- models
+  print(CC.pval)
+  print(DQ.pval)
+  return(VaR)
 }
 
 ## Forcast at 5%
-forcast(0.05)
+VaR5 = forcast(0.05)
+
+
 
 ## Forcast at 1%
-forcast(0.01)
+VaR1 = forcast(0.01)
+
+VaR
+
 
 
 
