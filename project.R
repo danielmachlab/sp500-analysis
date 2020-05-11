@@ -3,7 +3,7 @@ library(forecast)
 library(MSGARCH)
 
 # get daily S&P500 index
-sp500 <- getSymbols("^GSPC", auto.assign = FALSE, from = "1990-01-01")
+sp500 <- getSymbols("^GSPC", auto.assign = FALSE, from = "1990-01-01", to = "2020-4-16")
 head(sp500)
 
 # calculate daily log returns of the adjusted closing prices
@@ -17,6 +17,10 @@ arma
 data = arma$residuals
 
 length(data)
+
+plot(sp500.lrtn)
+plot(sp500)
+
 
 ############### Harsh's Models
 # 1-state GARCH normal dist model
@@ -112,6 +116,8 @@ ms2.gjr.sstd <- CreateSpec(variance.spec = list(model = "gjrGARCH"),
 fit.ms2.gjr.sstd <- FitML(spec = ms2.gjr.sstd, data = data)
 summary(fit.ms2.gjr.sstd)
 
+fit.ms2.gjr.sstd$par
+
 ### PART 4
 models = list(ms1.grach.norm, ms1.gjr.norm, ms2.grach.norm, ms2.gjr.norm,
               ms1.garch.student_t, ms1.gjr.student_t, ms2.garch.student_t, ms2.gjr.student_t,
@@ -163,7 +169,7 @@ calcPercentUnder = function(VaR, recent2kdata){
   return(percentUnder)
 }
 ## Forcast at 5%
-# VaR5 = forcast(0.05)
+VaR5 = forcast(0.05)
 recent2kdata = data[(n.its+1):length(data)]
 pU5 = calcPercentUnder(VaR5, recent2kdata)
 print(pU5)
